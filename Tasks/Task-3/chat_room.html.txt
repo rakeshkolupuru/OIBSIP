@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Chat - {{ name }} - {{ room }}</title>
+    <style>
+        #chat-messages {
+            overflow-y: scroll;
+            max-height: 300px; /* Adjust height as needed */
+        }
+    </style>
+</head>
+<body>
+    <h1>Flask Chat - {{ name }} - {{ room }}</h1>
+    <a href="{{ url_for('logout') }}">Logout</a>
+
+    <div id="chat-messages">
+        {% for message in messages %}
+            {% if message.sender == name %}
+                <p><strong>You:</strong> {{ message.content }}</p>
+            {% else %}
+                <p><strong>{{ message.sender }}:</strong> {{ message.content }}</p>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <form id="message-form">
+        <input type="text" id="message-input" placeholder="Type your message here" autocomplete="off">
+        <button type="submit">Send</button>
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+    <script>
+        var socket = io.connect();
+
+        socket.on('connect', function() {
+            console.log('Connected to server');
+        });
+
+        socket.on('message', function(message) {
+            console.log('New message:', message);
+            displayMessage(message);
+        });
+
+        function displayMessage(message) {
+            var chatMessages = document.getElementById('chat-messages');
+            var messageElement = document.createElement('p');
+            if (message.sender === '{{ name }}') {
+                messageElement.innerHTML = '<strong>You:</strong> ' + message.content;
+            } else {
+                messageElement.innerHTML = '<strong>' + message.sender + ':</strong> ' + message.content;
+            }
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+        }
+
+        document.getElementById('message-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var messageInput = document.getElementById('message-input');
+            var message = messageInput.value.trim();
+            if (message !== '') {
+                socket.emit('message', { sender: '{{ name }}', content: message });
+                messageInput.value = '';
+                displayMessage({ sender: '{{ name }}', content: message }); // Display sent message immediately
+            }
+        });
+    </script>
+</body>
+</html>

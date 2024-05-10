@@ -1,0 +1,47 @@
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_socketio import SocketIO, emit
+
+app = Flask(__name__)
+app.secret_key = "supersecretkey"
+socketio = SocketIO(app)
+
+# Dictionary to store messages per room
+room_messages = {}
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    name = request.form['name']
+    room = request.form['room']
+    if name and room:
+        session['name'] = name
+        session['room'] = room
+        return redirect(url_for('chat_room', room=room))
+    else:
+        flash('Please enter a name and room')
+        return redirect(url_for('index'))
+
+@app.route('/chat/<room>')
+def chat_room(room):
+    if 'name' not in session:
+        return redirect(url_for('index'))
+    return render_template('chat_room.html', name=session['name'], room=room, messages=room_messages.get(room, []))
+
+@socketio.on('message')
+def handle_message(message):
+    room = session.get('room')
+    if room:
+        room_messages.setdefault(room, []).append(message)
+        emit('message', message, room=room)
+
+@app.route('/logout')
+def logout():
+    session.pop('name', None)
+    session.pop('room', None)
+    return redirect(url_for('index'))
+
+if __name__ == '__main__':
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True)

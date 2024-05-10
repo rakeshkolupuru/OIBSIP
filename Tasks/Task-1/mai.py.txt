@@ -1,0 +1,27 @@
+from flask import Flask, render_template, request
+
+app Flask(_name_)
+
+@app.route(rule '/" methods=['GET', 'POST'])
+
+def bmicaci():
+
+if request.method == 'POST':
+
+weight = float(request.form['weight'])
+
+height = float(request.form['height'])
+
+bmi calculate_bmi(weight, height)
+
+return render_template(template name or list: 'bmicaci.ntal', bmi=bmi)
+
+return render_template('bmicani.htmlb
+
+Tusage
+
+def calculate_bmi(weight, height):
+
+return round (weight / (height ** 2), 2)
+
+if name=main: app.run(debug=True)

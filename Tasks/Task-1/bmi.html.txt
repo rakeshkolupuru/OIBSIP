@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BMI Calculator</title>
+
+</head>
+
+<body>
+
+<h1>BMI Calculator</h1>
+
+<img src="/static/jack.jpg" width="260" height="140">
+
+<form method="POST" action="/">
+
+<label for="weight">Weight (kg):</label>
+
+<input type="number" step="any" name="weight" id="weight" placeholder="Enter your weight in kilograms">
+
+<br>
+
+<label for="height">Height (m):</label>
+
+<input type="number" step="any" name="height" id="height" placeholder="Enter your height in meters">
+
+<br>
+
+<button type="submit">Calculate BMI</button>
+
+</form>
+
+{% if bmi %}
+
+<h2>Your BMI: {{ bmi }}</h2>
+
+{% endif %}
+
+</body>
+
+</html>
